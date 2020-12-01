@@ -1,89 +1,53 @@
 import { strictEqual } from 'assert';
 import { readFileToArray } from '../utils';
 
-function get2020SumsforTwo(arr: number[]): number {
-    let sum = 0;
-    const usedIndexes: number[] = [];
-
-    arr.forEach((num1, index1) => {
-        arr.forEach((num2, index2) => {
-            if (
-                index1 !== index2
-                && num1 + num2 === 2020
-                && usedIndexes.indexOf(index1) === -1
-                && usedIndexes.indexOf(index2) === -1
-            ) {
-                sum += num1 * num2;
-
-                usedIndexes.push(index1);
-                usedIndexes.push(index2);
-            }
-        });
-    });
-
-    return sum;
+function getCombinations(...args: number[][]): number[][] {
+    return args.reduce((val, b) => (
+        val.flatMap((d) => b.map((e) => [d, e].flat()))
+    ), [[]] as number[][]);
 }
 
-function get2020SumsforThree(arr: number[]): number {
-    let sum = 0;
-    const usedIndexes: number[] = [];
+function get2020Sums(...args: number[][]): number {
+    const combinations = getCombinations(...args);
 
-    arr.forEach((num1, index1) => {
-        arr.forEach((num2, index2) => {
-            arr.forEach((num3, index3) => {
-                if (
-                    index1 !== index2
-                    && index1 !== index3
-                    && index2 !== index3
-                    && num1 + num2 + num3 === 2020
-                    && usedIndexes.indexOf(index1) === -1
-                    && usedIndexes.indexOf(index2) === -1
-                    && usedIndexes.indexOf(index3) === -1
-                ) {
-                    sum += num1 * num2 * num3;
+    for (let i = 0; i < combinations.length; i += 1) {
+        const arrSum = combinations[i].reduce((acc, a) => acc + a, 0);
 
-                    usedIndexes.push(index1);
-                    usedIndexes.push(index2);
-                    usedIndexes.push(index3);
-                }
-            });
-        });
-    });
+        if (arrSum === 2020) {
+            return combinations[i].reduce((acc, a) => acc * a);
+        }
+    }
 
-    return sum;
+    return 0;
 }
 
-function part1(data: string[]): number {
-    return get2020SumsforTwo(data.map((line) => parseInt(line, 10)));
+function part1(data: number[]): number {
+    return get2020Sums(data, data);
 }
 
-function part2(data: string[]): number {
-    return get2020SumsforThree(data.map((line) => parseInt(line, 10)));
+function part2(data: number[]): number {
+    return get2020Sums(data, data, data);
 }
 
 try {
     readFileToArray('./1/input.txt').then((data) => {
-        strictEqual(get2020SumsforTwo([
+        const numberData = data.map((line) => parseInt(line, 10));
+        const testData = [
             1721,
             979,
             366,
             299,
             675,
             1456,
-        ]), 514579);
+        ];
 
-        console.log('Part 1', part1(data));
+        strictEqual(get2020Sums(testData, testData), 514579);
 
-        strictEqual(get2020SumsforThree([
-            1721,
-            979,
-            366,
-            299,
-            675,
-            1456,
-        ]), 241861950);
+        console.log('Part 1', part1(numberData));
 
-        console.log('Part 2', part2(data));
+        strictEqual(get2020Sums(testData, testData, testData), 241861950);
+
+        console.log('Part 2', part2(numberData));
     });
 } catch (err) {
     console.log(err);
