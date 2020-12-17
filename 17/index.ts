@@ -13,8 +13,6 @@ class Dimension {
 
     cycle = 0
 
-    size: number
-
     minCoord: Coord4D
 
     maxCoord: Coord4D
@@ -25,28 +23,27 @@ class Dimension {
         private readonly is4D = false,
     ) {
         const initialState = this.parseState(data);
-
-        this.size = Math.floor(initialState[0].length / 2);
+        const size = Math.floor(initialState[0].length / 2);
 
         initialState.forEach((row, y) => {
             row.forEach((cube, x) => {
                 if (cube === '#') {
-                    const coordStr = this.getCoordString(y - this.size, x - this.size, 0, 0);
+                    const coordStr = this.getCoordString(y - size, x - size, 0, 0);
                     this.state.set(coordStr, cube);
                 }
             });
         });
 
         this.minCoord = {
-            y: -this.size,
-            x: -this.size,
+            y: -size,
+            x: -size,
             z: 0,
             w: 0,
         };
 
         this.maxCoord = {
-            y: this.size,
-            x: this.size,
+            y: size,
+            x: size,
             z: 0,
             w: 0,
         };
@@ -98,10 +95,6 @@ class Dimension {
         return `${y}/${x}/${z}/${w}`;
     }
 
-    private grow(): void {
-        this.size += 1;
-    }
-
     private getCubeState(y: number, x: number, z: number, w = 0) {
         const coordStr = this.getCoordString(y, x, z, w);
         const activeNeigbours = this.getActiveNeighbourCount(y, x, z, w);
@@ -119,8 +112,6 @@ class Dimension {
 
     run(): number {
         for (let cycle = 0; cycle < 6; cycle += 1) {
-            this.grow();
-
             const min: Coord4D = {
                 y: 0,
                 x: 0,
